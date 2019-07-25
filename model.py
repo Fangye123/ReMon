@@ -77,6 +77,9 @@ for s in range(switches):
     m.add_constraint(m.sum(RC[s][f][r]*x[s, f, r] for f in range(flows) for r in range(rates)) <= capacity[s])
 for f in range(flows):
     m.add_constraint(m.sum(x[s, f, r] for s in path[f] for r in range(rates)) >= 0)
+for s in range(switches):
+    for f in range(flows):
+        m.add_constraint(m.sum(x[s, f, r] for r in range(rates)) <= 1)
 
 solution = m.solve(log_output=True)
 m.print_information()
@@ -95,11 +98,6 @@ for s in range(switches):
 
 for s in range(switches):
     for f in range(flows):
-        if result[s][f][0] == 1:
-            result[s][f][1] = 0
-            result[s][f][2] = 0
-        if result[s][f][1] == 1:
-            result[s][f][2] = 0
         for r in range(rates):
             if result[s][f][r] == 1:
                 total_accuracy += accuracy[s][f][r]
